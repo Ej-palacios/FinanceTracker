@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+
 use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
@@ -57,25 +58,30 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
+      
     public function updatePreferences(Request $request)
-    {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        
-        $validatedData = $request->validate([
-            'currency' => 'required|string|in:NIO,USD,EUR',
-            'date_format' => 'required|string|in:d/m/Y,m/d/Y,Y-m-d',
-            'dark_mode' => 'sometimes|boolean',
-            'notifications' => 'sometimes|boolean',
-        ]);
+{
+    /** @var User $user */
+    $user = Auth::user();
+    //$user = auth()->user();
 
-        $user->currency = $validatedData['currency'];
-        $user->date_format = $validatedData['date_format'];
-        $user->dark_mode = $request->boolean('dark_mode');
-        $user->notifications = $request->boolean('notifications');
+    // Validar los datos del formulario
+    $validated = $request->validate(rules: [
+        'currency' => 'required|in:NIO,USD,EUR',
+        'dark_mode' => 'nullable|boolean',
+    ]);
 
-        $user->save();
+    // Actualizar la moneda
+    $user->currency = $validated['currency'];
 
-        return back()->with('success', 'Preferencias actualizadas correctamente.');
-    }
+    // Actualizar el modo oscuro
+    $user->dark_mode = $request->has('dark_mode') ? true : false;
+
+    $user->save();
+
+    // Mensaje de éxito
+    return redirect()->back()->with('success', 'Preferencias guardadas correctamente.');
+}
+
+  
 }

@@ -28,7 +28,7 @@
                             </td>
                             <td class="text-end fw-bold {{ $transaction->category->type === 'income' ? 'text-success' : 'text-danger' }}">
                                 {{ $transaction->category->type === 'income' ? '+' : '-' }} 
-                                C$ {{ number_format($transaction->amount, 2) }}
+                                {{ $currencySymbol }} {{ number_format($transaction->amount, 2, '.', ',') }}
                             </td>
                         </tr>
                     @empty
