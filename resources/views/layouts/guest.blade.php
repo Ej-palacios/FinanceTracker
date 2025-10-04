@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/loader.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/utilities.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/form.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/alerts.css') }}"> <!-- NUEVO -->
     
     @yield('styles')
 </head>
@@ -22,9 +23,29 @@
     <!-- Incluir el componente de transiciones -->
     @include('components.loader')
 
+    <!-- Sistema de Alertas Globales -->
+    @include('components.alerts') <!-- NUEVO -->
+
     <div class="container-fluid px-3">
         <div class="row justify-content-center align-items-center min-vh-100">
             <div class="col-md-6 col-lg-4">
+                <!-- Alertas de Sesión -->
+                @if(session('success'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        showSuccess('{{ session('success') }}', 'Éxito');
+                    });
+                </script>
+                @endif
+
+                @if(session('error'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        showError('{{ session('error') }}', 'Error');
+                    });
+                </script>
+                @endif
+
                 @yield('content')
             </div>
         </div>
@@ -32,7 +53,8 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('assets/modules/darkMode.js   ') }}"></script>
+    <script src="{{ asset('assets/js/modules/alerts.js') }}"></script> <!-- NUEVO -->
+    <script src="{{ asset('assets/js/modules/darkMode.js') }}"></script>
     <script src="{{ asset('assets/js/core/loader.js') }}"></script>
     
     @yield('scripts')

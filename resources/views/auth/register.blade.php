@@ -61,6 +61,15 @@
             <span class="button-text">Registrar</span>
             <div class="button-glow"></div>
         </button>
+        <div class="mb-3">
+    <label for="currency" class="form-label">Moneda Principal</label>
+    <select class="form-select" id="currency" name="currency" required>
+        <option value="">Seleccionar moneda...</option>
+        <option value="NIO">Córdoba Nicaragüense (NIO)</option>
+        <option value="USD">Dólar Americano (USD)</option>
+        <option value="EUR">Euro (EUR)</option>
+    </select>
+</div>
 
         <div class="form-footer">
             <a class="login-link" href="{{ route('login') }}">

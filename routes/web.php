@@ -11,6 +11,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AccountController;
 use App\Http\Middleware\EnsureUserHasSettings;
+use App\Http\Controllers\ExchangeController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\BudgetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +52,10 @@ Route::middleware(['auth', EnsureUserHasSettings::class])->group(function () {
         Route::get('/{transaction}/edit', [TransactionsController::class, 'edit'])->name('transacciones.edit');
         Route::put('/{transaction}', [TransactionsController::class, 'update'])->name('transacciones.update');
         Route::delete('/{transaction}', [TransactionsController::class, 'destroy'])->name('transacciones.destroy');
+        // Ruta temporal para debug
+Route::get('/exchanges-debug', function () {
+    return view('exchanges.debug');
+})->name('exchanges.debug');
     });
 
     // Reports
@@ -75,6 +82,13 @@ Route::middleware(['auth', EnsureUserHasSettings::class])->group(function () {
         Route::delete('/accounts/{account}', 'destroy')->name('accounts.destroy');
     });
 
+    // Budgets
+    Route::controller(BudgetController::class)->group(function () {
+        Route::post('/budgets', 'store')->name('budgets.store');
+        Route::put('/budgets/{budget}', 'update')->name('budgets.update');
+        Route::delete('/budgets/{budget}', 'destroy')->name('budgets.destroy');
+    });
+
     // ==================== API Routes ====================
     Route::prefix('api')->name('api.')->group(function () {
         // Transactions API
@@ -94,6 +108,10 @@ Route::middleware(['auth', EnsureUserHasSettings::class])->group(function () {
         // Reports API
         Route::get('/monthly-summary', [ReportsController::class, 'monthlySummary'])
             ->name('monthly.summary');
+
+        // Budgets API
+        Route::get('/budgets', [BudgetController::class, 'getBudgets'])
+            ->name('budgets.list');
     });
 });
 
@@ -105,3 +123,24 @@ Route::fallback(function () {
         ? redirect()->route('dashboard')
         : redirect()->route('login');
 })->middleware('auth');
+
+// Exchanges
+Route::prefix('intercambios')->group(function () {
+    Route::get('/', [ExchangeController::class, 'index'])->name('exchanges.index');
+    Route::get('/crear', [ExchangeController::class, 'create'])->name('exchanges.create');
+    Route::post('/', [ExchangeController::class, 'store'])->name('exchanges.store');
+    Route::get('/{exchange}', [ExchangeController::class, 'show'])->name('exchanges.show');
+    Route::post('/{exchange}/aprobar', [ExchangeController::class, 'approve'])->name('exchanges.approve');
+    Route::post('/{exchange}/rechazar', [ExchangeController::class, 'reject'])->name('exchanges.reject');
+    Route::post('/calcular', [ExchangeController::class, 'calculateExchange'])->name('exchanges.calculate');
+    Route::get('/buscar-usuarios', [ExchangeController::class, 'searchUsers'])->name('exchanges.search');
+});
+
+// Notifications
+Route::prefix('notificaciones')->group(function () {
+    Route::get('/', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/{notification}/leer', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::post('/marcar-todas-leidas', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::get('/contador-no-leidas', [NotificationController::class, 'getUnreadCount'])->name('notifications.unreadCount');
+    Route::get('/lista', [NotificationController::class, 'getNotifications'])->name('notifications.list');
+});

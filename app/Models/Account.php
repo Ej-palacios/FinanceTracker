@@ -14,6 +14,7 @@ class Account extends Model
         'balance',
         'initial_balance',
         'type',
+        'currency',
         'user_id'
     ];
 

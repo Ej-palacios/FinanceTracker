@@ -1,0 +1,25 @@
+.user-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.user-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#liveSearchResults {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    background: white;
+}
+
+.select-user {
+    transition: all 0.2s ease;
+}
+
+.select-user:hover {
+    transform: scale(1.05);
+}

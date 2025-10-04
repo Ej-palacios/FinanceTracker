@@ -7,7 +7,6 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class ReportsController extends Controller
 {
@@ -101,8 +100,7 @@ class ReportsController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error en ReportsController@index: ' . $e->getMessage());
-            return back()->with('error', 'Error al generar reportes');
+            return back()->with('error', '❌ Error al generar reportes');
         }
     }
 
@@ -268,8 +266,7 @@ class ReportsController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error en ReportsController@updateCharts: ' . $e->getMessage());
-            return response()->json(['error' => 'Error al actualizar gráficos'], 500);
+            return response()->json(['error' => '❌ Error al actualizar gráficos'], 500);
         }
     }
 }

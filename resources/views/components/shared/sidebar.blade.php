@@ -21,6 +21,22 @@
                 <span class="link-text">Transacciones</span>
             </a>
         </li>
+        <!-- Nuevo item para Intercambios -->
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('exchanges.*') ? 'active' : '' }}" 
+               href="{{ route('exchanges.index') }}">
+                <i class="bi bi-currency-exchange"></i>
+                <span class="link-text">Intercambios</span>
+                @php
+                    $pendingCount = \App\Models\ExchangeRequest::where('to_user_id', auth()->id())
+                        ->where('status', 'pending')
+                        ->count();
+                @endphp
+                @if($pendingCount > 0)
+                    <span class="badge bg-danger badge-notification">{{ $pendingCount }}</span>
+                @endif
+            </a>
+        </li>
         <li class="nav-item">
             <a class="nav-link {{ request()->routeIs('reportes.index') ? 'active' : '' }}" href="{{ route('reportes.index') }}">
                 <i class="bi bi-graph-up"></i>
@@ -40,7 +56,7 @@
             <i class="bi bi-person-circle"></i>
             <div class="user-details">
                 <span class="user-name">{{ Auth::user()->name }}</span>
-                <span class="user-role"></span>
+                <span class="user-role">ID: {{ Auth::user()->user_id ?? Auth::user()->id }}</span>
             </div>
         </div>
         <form action="{{ route('logout') }}" method="POST" class="mt-3">

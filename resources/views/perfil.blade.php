@@ -22,9 +22,9 @@
                         @method('PUT')
                         <div class="mb-3">
                             <label for="name" class="form-label">Nombre</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" name="name" 
-                                   value="{{ old('name', $user->name) }}" 
+                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                   id="name" name="name"
+                                   value="{{ old('name', $user->name) }}"
                                    required
                                    @if($user->name_updated_at && $user->name_updated_at->diffInDays(now()) < 30) disabled @endif>
                             @error('name')
@@ -36,9 +36,9 @@
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" 
-                                   id="email" name="email" 
-                                   value="{{ $user->email }}" 
+                            <input type="email" class="form-control"
+                                   id="email" name="email"
+                                   value="{{ $user->email }}"
                                    disabled>
                             <small class="text-muted">El correo electrónico no se puede cambiar</small>
                         </div>
@@ -61,7 +61,7 @@
                         @method('PUT')
                         <div class="mb-3">
                             <label for="currency" class="form-label">Moneda Principal</label>
-                            <select class="form-select @error('currency') is-invalid @enderror" 
+                            <select class="form-select @error('currency') is-invalid @enderror"
                                     id="currency" name="currency" required>
                                 <option value="NIO" {{ $user->currency === 'NIO' ? 'selected' : '' }}>Córdobas (NIO)</option>
                                 <option value="USD" {{ $user->currency === 'USD' ? 'selected' : '' }}>Dólares (USD)</option>
@@ -72,8 +72,8 @@
                             @enderror
                         </div>
                         <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" 
-                                   id="dark_mode" name="dark_mode" 
+                            <input class="form-check-input" type="checkbox"
+                                   id="dark_mode" name="dark_mode"
                                    {{ $user->dark_mode ? 'checked' : '' }}>
                             <label class="form-check-label" for="dark_mode">Modo Oscuro</label>
                         </div>
@@ -87,26 +87,5 @@
 @endsection
 
 @section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Sincronizar el botón del header con el estado del modo oscuro
-    const darkModeToggle = document.querySelector('.dark-mode-toggle');
-    const darkModeCheckbox = document.getElementById('dark_mode');
-    
-    if (darkModeToggle && darkModeCheckbox) {
-        darkModeToggle.addEventListener('click', function() {
-            // Actualizar el checkbox cuando se usa el botón del header
-            darkModeCheckbox.checked = document.body.getAttribute('data-bs-theme') === 'dark';
-        });
-        
-        darkModeCheckbox.addEventListener('change', function() {
-            // Simular click en el botón del header cuando se cambia el checkbox
-            if ((this.checked && document.body.getAttribute('data-bs-theme') !== 'dark') || 
-                (!this.checked && document.body.getAttribute('data-bs-theme') === 'dark')) {
-                darkModeToggle.click();
-            }
-        });
-    }
-});
-</script>
+<script src="{{ asset('assets/js/modules/profile.js') }}"></script>
 @endsection

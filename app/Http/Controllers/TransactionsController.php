@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log;
 
 class TransactionsController extends Controller
 {
@@ -56,8 +55,7 @@ class TransactionsController extends Controller
             return view('transacciones', compact('transactions', 'accounts', 'categories'));
 
         } catch (\Exception $e) {
-            Log::error('Error en TransactionsController@index: ' . $e->getMessage());
-            return back()->with('error', 'Error al cargar transacciones');
+            return back()->with('error', '❌ Error al cargar transacciones');
         }
     }
 
@@ -70,8 +68,7 @@ class TransactionsController extends Controller
                 'accounts' => Account::where('user_id', $user->id)->get()
             ]);
         } catch (\Exception $e) {
-            Log::error('Error en TransactionsController@create: ' . $e->getMessage());
-            return back()->with('error', 'Error al cargar formulario');
+            return back()->with('error', '❌ Error al cargar formulario');
         }
     }
 
@@ -111,53 +108,34 @@ class TransactionsController extends Controller
                 $account->save();
 
                 return redirect()->route('transacciones.index')
-                    ->with('success', 'Transacción creada exitosamente');
+                    ->with('success', '✅ Transacción creada exitosamente');
             });
 
         } catch (\Exception $e) {
-            Log::error('Error en TransactionsController@store: ' . $e->getMessage());
-            return back()->with('error', 'Error al crear transacción')->withInput();
+            return back()->with('error', '❌ Error al crear transacción')->withInput();
         }
     }
 
-public function edit(Request $request, Transaction $transaction)
-{
-    try {
-        \Log::info('Edit method called', [
-            'transaction_id' => $transaction->id,
-            'user_id' => $request->user()->id,
-            'transaction_user_id' => $transaction->user_id
-        ]);
-
-        // Verificar que la transacción pertenezca al usuario autenticado
-        if ($request->user()->id !== $transaction->user_id) {
-            \Log::warning('Unauthorized edit attempt', [
-                'user_id' => $request->user()->id,
-                'transaction_user_id' => $transaction->user_id
+    public function edit(Request $request, Transaction $transaction)
+    {
+        try {
+            if ($request->user()->id !== $transaction->user_id) {
+                abort(403, 'No tienes permiso para editar esta transacción');
+            }
+            
+            return view('transactions.edit', [
+                'transaction' => $transaction,
+                'categories' => Category::where('user_id', $request->user()->id)->get(),
+                'accounts' => Account::where('user_id', $request->user()->id)->get()
             ]);
-            abort(403, 'No tienes permiso para editar esta transacción');
+        } catch (\Exception $e) {
+            return back()->with('error', '❌ Error al cargar transacción para editar');
         }
-        
-        \Log::info('Loading edit view', [
-            'view_path' => 'transactions.edit',
-            'transaction_id' => $transaction->id
-        ]);
-
-        return view('transactions.edit', [
-            'transaction' => $transaction,
-            'categories' => Category::where('user_id', $request->user()->id)->get(),
-            'accounts' => Account::where('user_id', $request->user()->id)->get()
-        ]);
-
-    } catch (\Exception $e) {
-        \Log::error('Error en TransactionsController@edit: ' . $e->getMessage());
-        return back()->with('error', 'Error al cargar transacción para editar');
     }
-}
+
     public function update(Request $request, Transaction $transaction)
     {
         try {
-            // Verificar que la transacción pertenezca al usuario autenticado
             if ($request->user()->id !== $transaction->user_id) {
                 abort(403, 'No tienes permiso para actualizar esta transacción');
             }
@@ -205,12 +183,11 @@ public function edit(Request $request, Transaction $transaction)
                 }
 
                 return redirect()->route('transacciones.index')
-                    ->with('success', 'Transacción actualizada exitosamente');
+                    ->with('success', '✅ Transacción actualizada exitosamente');
             });
 
         } catch (\Exception $e) {
-            Log::error('Error en TransactionsController@update: ' . $e->getMessage());
-            return back()->with('error', 'Error al actualizar transacción')->withInput();
+            return back()->with('error', '❌ Error al actualizar transacción')->withInput();
         }
     }
 
@@ -219,21 +196,17 @@ public function edit(Request $request, Transaction $transaction)
         try {
             $transaction = Transaction::findOrFail($id);
             
-            // Verificar que la transacción pertenezca al usuario autenticado
             if ($request->user()->id !== $transaction->user_id) {
-                return back()->with('error', 'No tienes permiso para eliminar esta transacción');
+                return back()->with('error', '❌ No tienes permiso para eliminar esta transacción');
             }
 
             DB::transaction(function () use ($transaction) {
                 $account = $transaction->account;
                 
-                // Revertir el efecto de la transacción en el balance de la cuenta
                 if ($account) {
                     if ($transaction->type === 'income') {
-                        // Si era un ingreso, restamos el monto del balance
                         $account->balance -= $transaction->amount;
                     } else {
-                        // Si era un gasto, sumamos el monto al balance
                         $account->balance += $transaction->amount;
                     }
                     $account->save();
@@ -242,28 +215,27 @@ public function edit(Request $request, Transaction $transaction)
                 $transaction->delete();
             });
 
-            return back()->with('success', 'Transacción eliminada correctamente');
+            return back()->with('success', '✅ Transacción eliminada correctamente');
 
         } catch (\Exception $e) {
-            Log::error('Error en TransactionsController@destroy: ' . $e->getMessage());
-            return back()->with('error', 'Error al eliminar transacción: ' . $e->getMessage());
+            return back()->with('error', '❌ Error al eliminar transacción');
         }
     }
+
     public function show(Request $request, $id)
-{
-    try {
-        $user = $request->user();
-        
-        $transaction = Transaction::with(['category', 'account'])
-            ->where('user_id', $user->id)
-            ->where('id', $id)
-            ->firstOrFail();
+    {
+        try {
+            $user = $request->user();
+            
+            $transaction = Transaction::with(['category', 'account'])
+                ->where('user_id', $user->id)
+                ->where('id', $id)
+                ->firstOrFail();
 
-        return view('transactions.show', compact('transaction'));
+            return view('transactions.show', compact('transaction'));
 
-    } catch (\Exception $e) {
-        Log::error('Error en TransactionsController@show: ' . $e->getMessage());
-        return back()->with('error', 'Transacción no encontrada');
+        } catch (\Exception $e) {
+            return back()->with('error', '❌ Transacción no encontrada');
+        }
     }
-}
 }

@@ -1,0 +1,40 @@
+.notification-item {
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+    padding: 1rem 1.25rem;
+}
+
+.notification-item.unread {
+    border-left-color: var(--primary-color);
+    background-color: rgba(var(--primary-rgb), 0.05);
+}
+
+.notification-item:hover {
+    background-color: var(--light-gray);
+    text-decoration: none;
+}
+
+.notification-icon {
+    flex-shrink: 0;
+}
+
+.notification-content h6 {
+    font-weight: 600;
+}
+
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.notification-icon .rounded-circle {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
