@@ -1,10 +1,10 @@
-<header class="app-header navbar navbar-expand">
+<header class="app-header navbar navbar-expand" style="border-bottom: 1px solid var(--border-color);">
     <div class="container-fluid">
         <button class="btn sidebar-toggle me-2 d-lg-none">
             <i class="bi bi-list"></i>
         </button>
 
-        <a class="navbar-brand" href="{{ route('dashboard') }}">
+        <a class="navbar-brand" href="{{ route('dashboard') }}" style="color: var(--text-primary);">
             <i class="bi bi-cash-coin me-2"></i>
             <span class="d-none d-sm-inline">FinanceTracker</span>
         </a>

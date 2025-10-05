@@ -51,8 +51,9 @@ class TransactionsController extends Controller
             $transactions = $query->paginate(15)->withQueryString();
             $accounts = Account::where('user_id', $user->id)->get();
             $categories = Category::where('user_id', $user->id)->get();
+            $userCurrency = $user->currency ?? 'NIO';
 
-            return view('transacciones', compact('transactions', 'accounts', 'categories'));
+            return view('transacciones', compact('transactions', 'accounts', 'categories', 'userCurrency'));
 
         } catch (\Exception $e) {
             return back()->with('error', '❌ Error al cargar transacciones');

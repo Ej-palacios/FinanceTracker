@@ -1,8 +1,8 @@
 /* === Modo Claro === */
 [data-bs-theme="light"] {
-    --primary-color: #007bff;
-    --primary-hover: #0056b3;
-    --primary-active: #004085;
+    --primary-color: #8b5cf6;
+    --primary-hover: #7c3aed;
+    --primary-active: #6b21a8;
 
     --white: #ffffff;
     --light-gray: #f8f9fa;
@@ -10,18 +10,19 @@
     --dark-gray: #343a40;
     --black: #212529;
 
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-      --sidebar-bg: var(--sidebar-bg-light);
-  --sidebar-text: var(--sidebar-text-light);
-  --sidebar-active-bg: var(--sidebar-active-bg-light);
-  --sidebar-active-text: var(--sidebar-active-text-light);
-  --sidebar-hover-bg: var(--sidebar-hover-bg-light);
-  --sidebar-separator: var(--sidebar-separator-light);
+    --shadow-sm: var(--shadow-sm);
+    --shadow: var(--shadow-md);
+    --shadow-lg: var(--shadow-lg);
+    --sidebar-bg: var(--sidebar-bg-light);
+    --sidebar-text: var(--sidebar-text-light);
+    --sidebar-active-bg: var(--sidebar-active-bg-light);
+    --sidebar-active-text: var(--sidebar-active-text-light);
+    --sidebar-hover-bg: var(--sidebar-hover-bg-light);
+    --sidebar-separator: var(--sidebar-separator-light);
   
-  --card-bg: var(--white);
-  --card-text: var(--black);
+    --card-bg: var(--white);
+    --card-text: var(--black);
+    --card-border-radius: var(--border-radius-lg);
 }
 
 /* === Sidebar Navigation === */

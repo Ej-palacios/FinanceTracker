@@ -13,6 +13,7 @@
 
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="{{ asset('assets/css/variables.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/buttons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/layout.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/components.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/utilities.css') }}">

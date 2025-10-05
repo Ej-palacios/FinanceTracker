@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Intercambios de Divisas')
+@section('title', 'Depósitos a Usuarios')
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/exchanges.css') }}">
@@ -8,12 +8,12 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="mb-4">Intercambios de Divisas</h1>
+    <h1 class="mb-4">Depósitos a Usuarios</h1>
 
     <!-- Estadísticas Rápidas -->
     <div class="row">
         @include('components.dashboard.stats-widget', [
-            'title' => 'Intercambios Enviados',
+            'title' => 'Depósitos Enviados',
             'value' => $sentRequests->total(),
             'icon' => 'send',
             'color' => 'primary',
@@ -23,7 +23,7 @@
         ])
 
         @include('components.dashboard.stats-widget', [
-            'title' => 'Intercambios Recibidos',
+            'title' => 'Depósitos Recibidos',
             'value' => $receivedRequests->total(),
             'icon' => 'inbox',
             'color' => 'info',
@@ -33,7 +33,7 @@
         ])
 
         @include('components.dashboard.stats-widget', [
-            'title' => 'Intercambios Completados',
+            'title' => 'Depósitos Completados',
             'value' => $sentRequests->where('status', 'completed')->count() + $receivedRequests->where('status', 'completed')->count(),
             'icon' => 'check-circle',
             'color' => 'success',
@@ -47,7 +47,7 @@
             'value' => $users->count(),
             'icon' => 'people',
             'color' => 'warning',
-            'footer' => 'Para intercambiar',
+            'footer' => 'Para depositar',
             'footerIcon' => 'search',
             'footerColor' => 'info'
         ])
@@ -60,14 +60,14 @@
                 <div class="card-body text-center py-4">
                     <div class="row align-items-center">
                         <div class="col-md-8 text-md-start">
-                            <h4 class="card-title mb-2">¿Quieres hacer un nuevo intercambio?</h4>
+                            <h4 class="card-title mb-2">¿Quieres hacer un nuevo depósito?</h4>
                             <p class="card-text text-muted mb-0">
-                                Envía una solicitud de intercambio a otros usuarios del sistema.
+                                Envía una solicitud de depósito a otros usuarios del sistema.
                             </p>
                         </div>
                         <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                            <a href="{{ route('exchanges.create') }}" class="btn btn-primary btn-lg">
-                                <i class="bi bi-arrow-left-right me-2"></i>Nuevo Intercambio
+                            <a href="{{ route('deposits.create') }}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-arrow-left-right me-2"></i>Nuevo Depósito
                             </a>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
         <!-- Solicitudes Recibidas -->
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
                         <i class="bi bi-inbox me-2 text-primary"></i>Solicitudes Recibidas
                     </h5>
@@ -133,13 +133,13 @@
 
                                                 @if($request->status === 'pending')
                                                     <div class="btn-group btn-group-sm">
-                                                        <form action="{{ route('exchanges.approve', $request) }}" method="POST" class="d-inline">
+                                                        <form action="{{ route('deposits.approve', $request) }}" method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit" class="btn btn-success btn-sm">
                                                                 <i class="bi bi-check me-1"></i>Aprobar
                                                             </button>
                                                         </form>
-                                                        <form action="{{ route('exchanges.reject', $request) }}" method="POST" class="d-inline">
+                                                        <form action="{{ route('deposits.reject', $request) }}" method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit" class="btn btn-outline-danger btn-sm">
                                                                 <i class="bi bi-x"></i>
@@ -147,7 +147,7 @@
                                                         </form>
                                                     </div>
                                                 @else
-                                                    <a href="{{ route('exchanges.show', $request) }}" class="btn btn-outline-primary btn-sm">
+                                                    <a href="{{ route('deposits.show', $request) }}" class="btn btn-outline-primary btn-sm">
                                                         <i class="bi bi-eye"></i> Ver
                                                     </a>
                                                 @endif
@@ -178,7 +178,7 @@
         <!-- Solicitudes Enviadas -->
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
                         <i class="bi bi-send me-2 text-info"></i>Solicitudes Enviadas
                     </h5>
@@ -233,11 +233,11 @@
                                                 </span>
 
                                                 <div class="btn-group btn-group-sm">
-                                                    <a href="{{ route('exchanges.show', $request) }}" class="btn btn-outline-primary btn-sm">
+                                                    <a href="{{ route('deposits.show', $request) }}" class="btn btn-outline-primary btn-sm">
                                                         <i class="bi bi-eye"></i> Detalles
                                                     </a>
                                                     @if($request->status === 'pending')
-                                                        <form action="{{ route('exchanges.reject', $request) }}" method="POST" class="d-inline">
+                                                        <form action="{{ route('deposits.reject', $request) }}" method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit" class="btn btn-outline-danger btn-sm">
                                                                 <i class="bi bi-x"></i> Cancelar
@@ -262,9 +262,9 @@
                         <div class="text-center py-5">
                             <i class="bi bi-send fs-1 text-muted mb-3"></i>
                             <h5 class="text-muted">No hay solicitudes enviadas</h5>
-                            <p class="text-muted">Crea tu primer intercambio para comenzar.</p>
-                            <a href="{{ route('exchanges.create') }}" class="btn btn-primary mt-2">
-                                <i class="bi bi-arrow-left-right me-2"></i>Crear Intercambio
+                            <p class="text-muted">Crea tu primer depósito para comenzar.</p>
+                            <a href="{{ route('deposits.create') }}" class="btn btn-primary mt-2">
+                                <i class="bi bi-arrow-left-right me-2"></i>Crear Depósito
                             </a>
                         </div>
                     @endif
@@ -274,27 +274,7 @@
     </div>
 
     <!-- Sección de Ayuda -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card bg-light border-0">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h5 class="card-title mb-2">¿Cómo funcionan los intercambios?</h5>
-                            <p class="card-text text-muted mb-0">
-                                1. Busca un usuario → 2. Propón un intercambio → 3. Espera aprobación → 4. ¡Intercambio completado!
-                            </p>
-                        </div>
-                        <div class="col-md-4 text-md-end">
-                            <a href="{{ route('exchanges.create') }}" class="btn btn-outline-primary">
-                                <i class="bi bi-play-circle me-2"></i>Comenzar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>
 @endsection
 

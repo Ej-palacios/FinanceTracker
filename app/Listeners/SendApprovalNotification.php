@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ExchangeApproved;
-use App\Services\NotificationService;
+use App\service\NotificationService;
 class SendApprovalNotification
 {
 

@@ -7,7 +7,41 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <h1>Reportes Financieros</h1>
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="mb-0">Reportes Financieros</h1>
+
+<!-- Botón para descargar PDF -->    
+<div class="d-flex justify-content-end mb-3">
+    <button id="exportPdfBtn" class="btn btn-danger shadow-sm d-flex align-items-center gap-2 px-4 py-2 custom-btn" style="background-color: #bb2d3b">
+        <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
+        <span>PDF</span>
+    </button>
+</div>
+
+<div id="reportContent">
+    <!-- Todo tu contenido: gráficos, tablas, filtros, etc. -->
+</div>
+
+<style>
+ .custom-btn {
+        border-radius: 10px; /* semi cuadrado */
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .custom-btn:hover {
+        background-color: #971c29 !important; /* rojo más oscuro al pasar el mouse */
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .custom-btn:active {
+        transform: scale(0.97);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+            </div>
         </div>
     </div>
 
@@ -86,6 +120,7 @@
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="{{ asset('assets/js/modules/reports.js') }}"></script>
 
 <script>
@@ -98,6 +133,21 @@
         currency: "{{ $userCurrency }}",      // <- Moneda del usuario (NIO, USD, EUR)
         currencySymbol: "{{ $currencySymbol }}" // <- Símbolo que se usará en gráficos
     };
+ 
+    // Pasamos los datos PHP a JS como variables globales
+    window.monthlyLabels = @json($monthlyLabels ?? []);
+    window.monthlyIncome = @json($monthlyIncome ?? []);
+    window.monthlyExpenses = @json($monthlyExpenses ?? []);
+    window.expenseChartData = @json($expenseChart ?? []);
+    
+    // Nuevos datos para el gráfico combinado
+    window.categoryChartData = {
+        income: @json($categoryChart['income'] ?? []),
+        expenses: @json($categoryChart['expenses'] ?? [])
+    };
+    
+    window.currentMonth = @json($currentMonth);
+
 </script>
 
 @endsection

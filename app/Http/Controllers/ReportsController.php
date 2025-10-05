@@ -7,6 +7,7 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportsController extends Controller
 {
@@ -269,4 +270,55 @@ class ReportsController extends Controller
             return response()->json(['error' => '❌ Error al actualizar gráficos'], 500);
         }
     }
+
+    
+public function generatePdf(Request $request)
+{
+    $monthlyImg = $request->input('monthlyChart');
+    $expenseImg = $request->input('expenseChart');
+    $categoryImg = $request->input('categoryChart');
+
+    // Guardar imágenes temporalmente
+    $monthlyPath = $this->saveTempImage($monthlyImg, 'monthly');
+    $expensePath = $this->saveTempImage($expenseImg, 'expense');
+    $categoryPath = $this->saveTempImage($categoryImg, 'category');
+
+    $pdf = Pdf::loadView('reportes.pdf', [
+        'title' => 'Reporte Financiero',
+        'date' => now()->format('d/m/Y'),
+        'monthlyImg' => public_path($monthlyPath),
+        'expenseImg' => public_path($expensePath),
+        'categoryImg' => public_path($categoryPath)
+    ]);
+
+    // Borrar imágenes temporales
+    @unlink(public_path($monthlyPath));
+    @unlink(public_path($expensePath));
+    @unlink(public_path($categoryPath));
+
+    return $pdf->download('reporte.pdf');
+}
+
+protected function saveTempImage($base64Image, $name)
+{
+    if (!$base64Image) return null;
+
+    // Quitar prefijo
+    if (strpos($base64Image, 'base64,') !== false) {
+        $base64Image = explode('base64,', $base64Image)[1];
+    }
+
+    $imageData = base64_decode($base64Image);
+    $filename = 'temp_' . $name . '_' . time() . '.png';
+    $path = 'uploads/temp/' . $filename;
+
+    // Crear carpeta si no existe
+    if (!file_exists(public_path('uploads/temp'))) {
+        mkdir(public_path('uploads/temp'), 0777, true);
+    }
+
+    file_put_contents(public_path($path), $imageData);
+    return $path;
+}
+
 }

@@ -5,7 +5,7 @@
             
             <div class="d-flex gap-2 flex-wrap">
                 <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown">
+                    <button class="btn-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown">
                         <i class="bi bi-funnel"></i> Filtros
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
@@ -64,8 +64,9 @@
                     <i class="bi bi-x-circle"></i> Limpiar
                 </button>
                 
-                <a href="{{ route('transacciones.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Nueva
+                <a href="{{ route('transacciones.create') }}" class="submit-button">
+                    <span class="button-text"><i class="bi bi-plus-circle"></i> Nueva</span>
+                    <span class="button-glow"></span>
                 </a>
             </div>
         </div>
@@ -150,8 +151,11 @@
                                 </td>
                                 <td>{{ $transaction->account->name }}</td>
                                 <td class="text-end fw-bold {{ $transaction->category->type === 'income' ? 'text-success' : 'text-danger' }}">
-                                    {{ $transaction->category->type === 'income' ? '+' : '-' }} 
-                                    {{ number_format($transaction->amount, 2) }} {{ auth()->user()->currency ?? 'NIO' }}
+                                    @php
+                                        $converted = \App\Service\CurrencyService::convertAndFormat($transaction->amount, $userCurrency ?? 'NIO');
+                                    @endphp
+                                    {{ $transaction->category->type === 'income' ? '+' : '-' }}
+                                    {{ $converted['formatted'] }}
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">

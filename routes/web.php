@@ -14,6 +14,7 @@ use App\Http\Middleware\EnsureUserHasSettings;
 use App\Http\Controllers\ExchangeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,15 @@ use App\Http\Controllers\BudgetController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+// ==================== Public Routes ====================
+Route::get('/servicios', function () {
+    return view('servicios');
+})->name('servicios');
+
+Route::get('/contacto', function () {
+    return view('contacto');
+})->name('contacto');
 
 // ==================== Authentication Routes ====================
 Route::controller(LoginController::class)->group(function () {
@@ -60,6 +70,7 @@ Route::get('/exchanges-debug', function () {
 
     // Reports
     Route::get('/reportes', [ReportsController::class, 'index'])->name('reportes.index');
+
 
     // Profile
     Route::prefix('perfil')->group(function () {
@@ -124,16 +135,16 @@ Route::fallback(function () {
         : redirect()->route('login');
 })->middleware('auth');
 
-// Exchanges
-Route::prefix('intercambios')->group(function () {
-    Route::get('/', [ExchangeController::class, 'index'])->name('exchanges.index');
-    Route::get('/crear', [ExchangeController::class, 'create'])->name('exchanges.create');
-    Route::post('/', [ExchangeController::class, 'store'])->name('exchanges.store');
-    Route::get('/{exchange}', [ExchangeController::class, 'show'])->name('exchanges.show');
-    Route::post('/{exchange}/aprobar', [ExchangeController::class, 'approve'])->name('exchanges.approve');
-    Route::post('/{exchange}/rechazar', [ExchangeController::class, 'reject'])->name('exchanges.reject');
-    Route::post('/calcular', [ExchangeController::class, 'calculateExchange'])->name('exchanges.calculate');
-    Route::get('/buscar-usuarios', [ExchangeController::class, 'searchUsers'])->name('exchanges.search');
+// Deposits
+Route::prefix('depositos')->group(function () {
+    Route::get('/', [ExchangeController::class, 'index'])->name('deposits.index');
+    Route::get('/crear', [ExchangeController::class, 'create'])->name('deposits.create');
+    Route::post('/', [ExchangeController::class, 'store'])->name('deposits.store');
+    Route::get('/{exchange}', [ExchangeController::class, 'show'])->name('deposits.show');
+    Route::post('/{exchange}/aprobar', [ExchangeController::class, 'approve'])->name('deposits.approve');
+    Route::post('/{exchange}/rechazar', [ExchangeController::class, 'reject'])->name('deposits.reject');
+    Route::post('/calcular', [ExchangeController::class, 'calculateDeposit'])->name('deposits.calculate');
+    Route::get('/buscar-usuarios', [ExchangeController::class, 'searchUsers'])->name('deposits.search');
 });
 
 // Notifications

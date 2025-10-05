@@ -195,9 +195,9 @@
   align-items: center;
   color: var(--sidebar-text);
   text-decoration: none;
-  padding: 0.75rem 1rem;
-  border-radius: 4px;
-  margin: 0 0.5rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  margin: 0 var(--spacing-sm);
   transition: all var(--transition-speed) var(--transition-easing);
 }
 

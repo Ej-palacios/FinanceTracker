@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Account;
+use App\Service\CurrencyService;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -17,41 +18,25 @@ class DashboardController extends Controller
 
             // Moneda del usuario
             $userCurrency = $user->currency ?? 'NIO';
+            $currencySymbol = CurrencyService::getSymbol($userCurrency);
 
-            // Tasas estáticas de ejemplo
-            $exchangeRates = [
-                'NIO' => 1,
-                'USD' => 0.028,
-                'EUR' => 0.026,
-            ];
-
-            $rate = $exchangeRates[$userCurrency] ?? 1;
-
-            // Símbolo según moneda
-            $currencySymbol = match ($userCurrency) {
-                'NIO' => 'C$',
-                'USD' => '$',
-                'EUR' => '€',
-                default => 'C$',
-            };
-
-            // Montos convertidos
+            // Montos en NIO (base de datos)
             $currentBalanceNIO = Account::where('user_id', $user->id)->sum('balance');
-            $currentBalance = $currentBalanceNIO * $rate;
-
             $monthlyIncomeNIO = Transaction::where('user_id', $user->id)
                 ->whereHas('category', fn($q) => $q->where('type', 'income'))
                 ->whereMonth('date', $now->month)
                 ->whereYear('date', $now->year)
                 ->sum('amount');
-            $monthlyIncome = $monthlyIncomeNIO * $rate;
-
             $monthlyExpensesNIO = Transaction::where('user_id', $user->id)
                 ->whereHas('category', fn($q) => $q->where('type', 'expense'))
                 ->whereMonth('date', $now->month)
                 ->whereYear('date', $now->year)
                 ->sum('amount');
-            $monthlyExpenses = $monthlyExpensesNIO * $rate;
+
+            // Convertir a moneda del usuario
+            $currentBalance = CurrencyService::convert($currentBalanceNIO, 'NIO', $userCurrency);
+            $monthlyIncome = CurrencyService::convert($monthlyIncomeNIO, 'NIO', $userCurrency);
+            $monthlyExpenses = CurrencyService::convert($monthlyExpensesNIO, 'NIO', $userCurrency);
 
             // Transacciones recientes
             $recentTransactions = Transaction::with(['category', 'account'])
@@ -66,21 +51,21 @@ class DashboardController extends Controller
                 $date = $now->copy()->subMonths($i);
                 $monthName = $date->format('M Y');
 
-                $income = Transaction::where('user_id', $user->id)
+                $incomeNIO = Transaction::where('user_id', $user->id)
                     ->whereHas('category', fn($q) => $q->where('type', 'income'))
                     ->whereMonth('date', $date->month)
                     ->whereYear('date', $date->year)
-                    ->sum('amount') * $rate;
+                    ->sum('amount');
 
-                $expenses = Transaction::where('user_id', $user->id)
+                $expensesNIO = Transaction::where('user_id', $user->id)
                     ->whereHas('category', fn($q) => $q->where('type', 'expense'))
                     ->whereMonth('date', $date->month)
                     ->whereYear('date', $date->year)
-                    ->sum('amount') * $rate;
+                    ->sum('amount');
 
                 $monthlySummary[$monthName] = [
-                    'income' => $income,
-                    'expenses' => $expenses,
+                    'income' => CurrencyService::convert($incomeNIO, 'NIO', $userCurrency),
+                    'expenses' => CurrencyService::convert($expensesNIO, 'NIO', $userCurrency),
                 ];
             }
 
@@ -90,7 +75,8 @@ class DashboardController extends Controller
                 'monthlyExpenses',
                 'recentTransactions',
                 'monthlySummary',
-                'currencySymbol'
+                'currencySymbol',
+                'userCurrency'
             ));
 
         } catch (\Exception $e) {

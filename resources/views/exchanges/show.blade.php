@@ -17,17 +17,17 @@
                     <p class="text-muted mb-0">Información completa de la transacción entre usuarios</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('exchanges.index') }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('deposits.index') }}" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left me-2"></i>Volver
                     </a>
                     @if(auth()->id() === $exchange->to_user_id && $exchange->status === \App\Models\ExchangeRequest::STATUS_PENDING)
-                    <form action="{{ route('exchanges.approve', $exchange) }}" method="POST" class="d-inline">
+                    <form action="{{ route('deposits.approve', $exchange) }}" method="POST" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-success">
                             <i class="bi bi-check-circle me-2"></i>Aprobar
                         </button>
                     </form>
-                    <form action="{{ route('exchanges.reject', $exchange) }}" method="POST" class="d-inline">
+                    <form action="{{ route('deposits.reject', $exchange) }}" method="POST" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-danger">
                             <i class="bi bi-x-circle me-2"></i>Rechazar

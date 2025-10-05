@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nuevo Intercambio')
+@section('title', 'Nuevo Depósito')
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/exchange-create.css') }}">
@@ -11,8 +11,8 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h1>Nuevo Intercambio</h1>
-                <a href="{{ route('exchanges.index') }}" class="btn btn-secondary">
+                <h1>Nuevo Depósito</h1>
+                <a href="{{ route('deposits.index') }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Volver
                 </a>
             </div>
@@ -21,54 +21,44 @@
 
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <!-- Tarjeta de Búsqueda -->
+            <!-- Buscar Cuenta -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
-                        <i class="bi bi-search me-2"></i>Buscar Usuario
+                        <i class="bi bi-search me-2"></i>Buscar Cuenta
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('exchanges.create') }}" method="GET" id="searchForm">
+                    <form action="{{ route('deposits.create') }}" method="GET" id="searchForm">
                         <div class="row g-3">
                             <div class="col-md-8">
-                                <label for="search" class="form-label">Buscar por ID, Nombre o Email</label>
+                                <label for="search" class="form-label">ID del Usuario</label>
                                 <div class="input-group">
                                     <input type="text"
                                            class="form-control"
                                            id="search"
                                            name="search"
                                            value="{{ $search ?? '' }}"
-                                           placeholder="Ej: 12345678, Juan Pérez, juan@email.com"
+                                           placeholder="Ej: 12345678"
                                            required>
                                     <button type="submit" class="btn btn-primary">
                                         <i class="bi bi-search"></i> Buscar
                                     </button>
                                 </div>
                                 <small class="text-muted">
-                                    Ingresa el ID de 8 dígitos, nombre o email del usuario
+                                    Ingresa el ID de 8 dígitos del usuario al que se realizará la transferencia
                                 </small>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">&nbsp;</label>
                                 <div>
-                                    <a href="{{ route('exchanges.create') }}" class="btn btn-outline-secondary">
+                                    <a href="{{ route('deposits.create') }}" class="btn btn-outline-secondary">
                                         <i class="bi bi-arrow-clockwise"></i> Limpiar
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </form>
-
-                    <!-- Búsqueda en Tiempo Real (Opcional) -->
-                    <div class="mt-3">
-                        <label class="form-label">Búsqueda Rápida</label>
-                        <input type="text"
-                               class="form-control"
-                               id="liveSearch"
-                               placeholder="Escribe para buscar en tiempo real...">
-                        <div id="liveSearchResults" class="mt-2" style="display: none;"></div>
-                    </div>
                 </div>
             </div>
 
@@ -77,13 +67,13 @@
             <div class="card mb-4">
                 <div class="card-header bg-success text-white">
                     <h5 class="card-title mb-0">
-                        <i class="bi bi-people me-2"></i>Usuarios Encontrados ({{ $users->count() }})
+                        <i class="bi bi-people me-2"></i>Usuario Encontrado
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3" id="usersList">
                         @foreach($users as $foundUser)
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="card user-card border h-100">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start">
@@ -127,8 +117,8 @@
             <div class="card mb-4">
                 <div class="card-body text-center py-5">
                     <i class="bi bi-search fs-1 text-muted mb-3"></i>
-                    <h5 class="text-muted">No se encontraron usuarios</h5>
-                    <p class="text-muted">Intenta con otro ID, nombre o email</p>
+                    <h5 class="text-muted">No se encontró el usuario</h5>
+                    <p class="text-muted">Verifica el ID e intenta nuevamente</p>
                 </div>
             </div>
             @endif
@@ -137,11 +127,11 @@
             <div class="card" id="exchangeFormCard" style="{{ isset($search) && $search ? '' : 'display: none;' }}">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
-                        <i class="bi bi-arrow-left-right me-2"></i>Detalles del Intercambio
+                        <i class="bi bi-arrow-left-right me-2"></i>Detalles de la Transferencia
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('exchanges.store') }}" method="POST" id="exchangeForm">
+                    <form action="{{ route('deposits.store') }}" method="POST" id="exchangeForm">
                         @csrf
                         <input type="hidden" id="to_user_id" name="to_user_id">
 
@@ -191,7 +181,7 @@
                             <div class="d-flex">
                                 <i class="bi bi-info-circle me-2"></i>
                                 <div>
-                                    <h6 class="alert-heading mb-2">Resumen del Intercambio</h6>
+                                    <h6 class="alert-heading mb-2">Resumen de la Transferencia</h6>
                                     <p class="mb-1" id="exchange_summary"></p>
                                     <small class="text-muted" id="exchange_details"></small>
                                 </div>
@@ -211,7 +201,7 @@
                                 <i class="bi bi-calculator"></i> Calcular
                             </button>
                             <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
-                                <i class="bi bi-send"></i> Enviar Solicitud
+                                <i class="bi bi-send"></i> Realizar Transferencia
                             </button>
                         </div>
                     </form>
@@ -223,9 +213,9 @@
             <div class="card">
                 <div class="card-body text-center py-5">
                     <i class="bi bi-people fs-1 text-primary mb-3"></i>
-                    <h5 class="text-primary">Busca un usuario para comenzar</h5>
+                    <h5 class="text-primary">Busca la cuenta del usuario</h5>
                     <p class="text-muted">
-                        Usa el buscador superior para encontrar usuarios por su ID de 8 dígitos, nombre o email.
+                        Ingresa el ID del usuario para realizar la transferencia.
                     </p>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-<aside class="app-sidebar">
+<aside class="app-sidebar" style="background-color: var(--sidebar-bg); color: var(--sidebar-text);">
     <div class="sidebar-header p-3">
         <div class="sidebar-brand">
             <i class="bi bi-cash-coin"></i>
@@ -21,12 +21,12 @@
                 <span class="link-text">Transacciones</span>
             </a>
         </li>
-        <!-- Nuevo item para Intercambios -->
+        <!-- Nuevo item para Depósitos -->
         <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('exchanges.*') ? 'active' : '' }}" 
-               href="{{ route('exchanges.index') }}">
+            <a class="nav-link {{ request()->routeIs('deposits.*') ? 'active' : '' }}"
+               href="{{ route('deposits.index') }}">
                 <i class="bi bi-currency-exchange"></i>
-                <span class="link-text">Intercambios</span>
+                <span class="link-text">Depósitos</span>
                 @php
                     $pendingCount = \App\Models\ExchangeRequest::where('to_user_id', auth()->id())
                         ->where('status', 'pending')
@@ -47,6 +47,20 @@
             <a class="nav-link {{ request()->routeIs('perfil') ? 'active' : '' }}" href="{{ route('perfil') }}">
                 <i class="bi bi-person"></i>
                 <span class="link-text">Perfil</span>
+            </a>
+        </li>
+
+        <!-- Enlaces públicos -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('servicios') }}" target="_blank">
+                <i class="bi bi-gear"></i>
+                <span class="link-text">Servicios</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('contacto') }}" target="_blank">
+                <i class="bi bi-envelope"></i>
+                <span class="link-text">Contacto</span>
             </a>
         </li>
     </ul>

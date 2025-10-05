@@ -53,7 +53,7 @@ class Notification extends Model
     {
         switch ($this->related_type) {
             case 'exchange':
-                return route('exchanges.show', $this->related_id);
+                return route('deposits.show', $this->related_id);
             default:
                 return '#';
         }
