@@ -75,10 +75,126 @@
     }
 }
 
+/* Estilos para Toasts */
+.toast-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.toast {
+    max-width: 350px;
+    min-width: 300px;
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(100px);
+    transition: all 0.3s ease-out;
+}
+
+.toast.toast-show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.toast-hide {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.toast-header {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.125));
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: var(--bg-secondary, #f8f9fa);
+}
+
+.toast-body {
+    padding: 0.75rem;
+    color: var(--text-primary, #212529);
+}
+
+.toast-icon {
+    font-size: 1.1rem;
+}
+
+.toast-success .toast-icon i {
+    color: #198754;
+}
+
+.toast-error .toast-icon i {
+    color: #dc3545;
+}
+
+.toast-warning .toast-icon i {
+    color: #ffc107;
+}
+
+.toast-info .toast-icon i {
+    color: #0dcaf0;
+}
+
+.toast-debug .toast-icon i {
+    color: #6c757d;
+}
+
+.toast-success {
+    border-left: 4px solid #198754;
+}
+
+.toast-error {
+    border-left: 4px solid #dc3545;
+}
+
+.toast-warning {
+    border-left: 4px solid #ffc107;
+}
+
+.toast-info {
+    border-left: 4px solid #0dcaf0;
+}
+
+.toast-debug {
+    border-left: 4px solid #6c757d;
+}
+
+/* Animaciones mejoradas para alertas */
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#globalAlerts .alert {
+    animation: bounceIn 0.6s ease-out;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     #globalAlerts {
         max-width: 90% !important;
         padding: 1rem !important;
+    }
+
+    .toast {
+        max-width: 90% !important;
+        min-width: 250px !important;
     }
 }

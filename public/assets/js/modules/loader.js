@@ -1,165 +1,137 @@
 (function () {
-    // Configuración global
-    const LOADER_ID = 'custom-loader';
-    const NO_SCROLL_CLASS = 'no-scroll';
-    const TRANSITION_DURATION = 500;
+  const LOADER_ID = 'custom-loader';
+  const NO_SCROLL_CLASS = 'no-scroll';
+  const LOADING_BODY_CLASS = 'loading';
+  const CONTENT_WRAPPER_SELECTOR = '.content-wrapper';
+  const SHOW_DELAY_ON_LOAD_MS = 120; // "unas milésimas" antes de cerrar
+  const FADE_DURATION_MS = 300; // debe coincidir con CSS
 
-    // Crear loader si no existe
-    function createLoader() {
-        if (document.getElementById(LOADER_ID)) return;
+  function ensureLoaderExists() {
+    let loader = document.getElementById(LOADER_ID);
+    if (!loader) {
+      // El layout incluye el blade del loader; si no se renderizó por algún motivo, crearlo minimalmente
+      loader = document.createElement('div');
+      loader.id = LOADER_ID;
+      loader.className = 'app-loader';
+      loader.innerHTML = `
+        <div class="coins-scene">
+          <div class="center-core"><div class="core-ring"></div><div class="core-glow"></div></div>
+          <div class="orbit orbit-1"><div class="coin" data-currency="USD">$</div></div>
+          <div class="orbit orbit-2"><div class="coin" data-currency="EUR">€</div></div>
+          <div class="orbit orbit-3"><div class="coin" data-currency="GBP">£</div></div>
+          <div class="orbit orbit-4"><div class="coin" data-currency="BTC">₿</div></div>
+        </div>
+        <div class="loader-text">Cargando...</div>`;
+      document.body.appendChild(loader);
+    }
+    return loader;
+  }
 
-        const loader = document.createElement('div');
-        loader.id = LOADER_ID;
-        loader.innerHTML = `
-            <div class="loader">
-                <div class="orbit-container">
-                    <div class="heart"></div>
-                    <div class="coin coin1"><i class="bi bi-coin"></i></div>
-                    <div class="coin coin2"><i class="bi bi-coin"></i></div>
-                    <div class="coin coin3"><i class="bi bi-coin"></i></div>
-                    <div class="coin coin4"><i class="bi bi-coin"></i></div>
-                </div>
-                <span>Loading</span>
-            </div>
-        `;
-        document.body.appendChild(loader);
+  function hideMainContent() {
+    const mainContent = document.querySelector(CONTENT_WRAPPER_SELECTOR);
+    if (mainContent) {
+      mainContent.style.visibility = 'hidden';
+    }
+  }
+
+  function showMainContent() {
+    const mainContent = document.querySelector(CONTENT_WRAPPER_SELECTOR);
+    if (mainContent) {
+      mainContent.style.visibility = '';
+    }
+  }
+
+  function showLoader() {
+    const loader = ensureLoaderExists();
+    loader.style.display = 'flex';
+    requestAnimationFrame(() => {
+      loader.style.opacity = '1';
+    });
+    document.body.classList.add(NO_SCROLL_CLASS);
+    document.body.classList.add(LOADING_BODY_CLASS);
+    hideMainContent();
+  }
+
+  function hideLoader() {
+    const loader = ensureLoaderExists();
+    loader.style.opacity = '0';
+    setTimeout(() => {
+      loader.style.display = 'none';
+      showMainContent();
+      document.body.classList.remove(LOADING_BODY_CLASS);
+    }, FADE_DURATION_MS);
+    document.body.classList.remove(NO_SCROLL_CLASS);
+  }
+
+  // Al iniciar: mostrar loader inmediatamente y ocultar contenido
+  function boot() {
+    showLoader();
+
+    // Cerrar ligeramente después de load
+    if (document.readyState === 'complete') {
+      setTimeout(hideLoader, SHOW_DELAY_ON_LOAD_MS);
+    } else {
+      window.addEventListener('load', () => {
+        setTimeout(hideLoader, SHOW_DELAY_ON_LOAD_MS);
+      });
     }
 
-    // Mostrar loader con animación
-    function showLoader() {
-        const loader = document.getElementById(LOADER_ID);
-        if (!loader) return;
+    // Navegación interna: mostrar loader
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a');
+      if (
+        link &&
+        !link.target &&
+        !link.href.startsWith('javascript:') &&
+        !link.href.startsWith('mailto:') &&
+        !link.href.startsWith('tel:') &&
+        !link.dataset.noload &&
+        link.hostname === window.location.hostname &&
+        !link.href.includes('#')
+      ) {
+        e.preventDefault();
+        showLoader();
+        // Pequeña espera para feedback visual
+        setTimeout(() => { window.location.href = link.href; }, 80);
+      }
+    });
 
-        loader.style.display = 'flex';
-        loader.offsetHeight; // Forzar reflow para animación
-        loader.style.opacity = '1';
-        document.body.classList.add(NO_SCROLL_CLASS);
-    }
+    // Manejar volver desde cache (bfcache)
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        setTimeout(hideLoader, SHOW_DELAY_ON_LOAD_MS);
+      }
+    });
 
-    // Ocultar loader con animación
-    function hideLoader() {
-        const loader = document.getElementById(LOADER_ID);
-        if (!loader) return;
-
-        loader.style.opacity = '0';
-        setTimeout(() => {
-            loader.style.display = 'none';
-        }, TRANSITION_DURATION);
-
-        document.body.classList.remove(NO_SCROLL_CLASS);
-    }
-
-    // Inicializar loader al cargar DOM
-    function initLoaderOnLoad() {
-        if (document.readyState === 'complete') {
-            hideLoader();
-        } else {
-            window.addEventListener('load', () => {
-                hideLoader();
-            });
-        }
-    }
-
-    // Manejar navegaciones internas
-    function handleNavigationClicks() {
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a');
-
-            if (
-                link &&
-                !link.target &&
-                !link.href.startsWith('javascript:') &&
-                !link.href.startsWith('mailto:') &&
-                !link.href.startsWith('tel:') &&
-                !link.dataset.noload &&
-                link.hostname === window.location.hostname &&
-                !link.href.includes('#')
-            ) {
-                e.preventDefault();
-                showLoader();
-
-                setTimeout(() => {
-                    window.location.href = link.href;
-                }, 50);
-            }
-        });
-    }
-
-    // Manejar navegación mediante botones de navegador
-    function handlePageShowEvents() {
-        window.addEventListener('pageshow', (event) => {
-            if (event.persisted) {
-                hideLoader();
-            }
-        });
-    }
-
-    // Interceptar fetch requests para mostrar loader en AJAX
-    function interceptFetchRequests() {
-        const originalFetch = window.fetch;
-
-        window.fetch = function(...args) {
-            // Mostrar loader para requests AJAX
-            showLoader();
-
-            return originalFetch.apply(this, args)
-                .then(response => {
-                    // Ocultar loader cuando la respuesta llegue
-                    hideLoader();
-                    return response;
-                })
-                .catch(error => {
-                    // Ocultar loader en caso de error
-                    hideLoader();
-                    throw error;
-                });
-        };
-    }
-
-    // Interceptar XMLHttpRequest para compatibilidad
-    function interceptXMLHttpRequests() {
-        const originalOpen = XMLHttpRequest.prototype.open;
-
-        XMLHttpRequest.prototype.open = function(method, url, ...args) {
-            this.addEventListener('loadstart', () => {
-                // Solo mostrar loader para requests que no sean navegación
-                if (!url.includes(window.location.origin + window.location.pathname)) {
-                    showLoader();
-                }
-            });
-
-            this.addEventListener('loadend', () => {
-                hideLoader();
-            });
-
-            return originalOpen.call(this, method, url, ...args);
-        };
-    }
-
-    // Manejar envío de formularios
-    function handleFormSubmissions() {
-        document.addEventListener('submit', (e) => {
-            const form = e.target;
-            // Solo mostrar loader si no tiene data-no-loader
-            if (!form.hasAttribute('data-no-loader')) {
-                showLoader();
-            }
-        });
-    }
-
-    // Exponer funciones globalmente para uso manual
-    window.FinanceLoader = {
-        show: showLoader,
-        hide: hideLoader
+    // Interceptar fetch
+    const originalFetch = window.fetch;
+    window.fetch = function(...args) {
+      showLoader();
+      return originalFetch.apply(this, args)
+        .then((res) => { setTimeout(hideLoader, SHOW_DELAY_ON_LOAD_MS); return res; })
+        .catch((err) => { setTimeout(hideLoader, SHOW_DELAY_ON_LOAD_MS); throw err; });
     };
 
-    // Ejecución principal
-    createLoader();
-    showLoader(); // Mostrar inmediatamente
-    initLoaderOnLoad();
-    handleNavigationClicks();
-    handlePageShowEvents();
-    interceptFetchRequests();
-    interceptXMLHttpRequests();
-    handleFormSubmissions();
+    // Interceptar XHR
+    const originalOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+      this.addEventListener('loadstart', () => { showLoader(); });
+      this.addEventListener('loadend', () => { setTimeout(hideLoader, SHOW_DELAY_ON_LOAD_MS); });
+      return originalOpen.call(this, method, url, ...rest);
+    };
+
+    // Formularios
+    document.addEventListener('submit', (e) => {
+      const form = e.target;
+      if (!form.hasAttribute('data-no-loader')) {
+        showLoader();
+      }
+    });
+  }
+
+  // Exponer API
+  window.FinanceLoader = { show: showLoader, hide: hideLoader };
+
+  // Lanzar
+  boot();
 })();

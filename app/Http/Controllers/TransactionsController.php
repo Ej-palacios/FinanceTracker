@@ -93,19 +93,33 @@ class TransactionsController extends Controller
 
             return DB::transaction(function () use ($validated, $request) {
                 $user = $request->user();
-                
-                $transaction = new Transaction($validated);
-                $transaction->user_id = $user->id;
-                $transaction->save();
-                
+
                 $account = Account::where('id', $validated['account_id'])
                     ->where('user_id', $user->id)
-                    ->lockForUpdate()
                     ->firstOrFail();
-                    
-                $account->balance += $validated['type'] === 'income' 
-                    ? $validated['amount'] 
-                    : -$validated['amount'];
+
+                if ($account->type === 'savings') {
+                    return back()->with('error', '❌ No se pueden realizar transacciones en la cuenta de ahorros')->withInput();
+                }
+
+                // Convertir el monto ingresado (moneda del usuario) a NIO para almacenar y ajustar saldos
+                $userCurrency = $user->currency ?? 'NIO';
+                $amountUser = (float) $validated['amount'];
+                $amountNIO = \App\Service\CurrencyService::convert($amountUser, $userCurrency, 'NIO');
+
+                $transaction = new Transaction();
+                $transaction->type = $validated['type'];
+                $transaction->amount = $amountNIO;
+                $transaction->category_id = $validated['category_id'];
+                $transaction->account_id = $validated['account_id'];
+                $transaction->date = $validated['date'];
+                $transaction->description = $validated['description'] ?? null;
+                $transaction->user_id = $user->id;
+                $transaction->save();
+
+                $account->balance += $validated['type'] === 'income'
+                    ? $amountNIO
+                    : -$amountNIO;
                 $account->save();
 
                 return redirect()->route('transacciones.index')
@@ -158,26 +172,49 @@ class TransactionsController extends Controller
 
             return DB::transaction(function () use ($validated, $transaction) {
                 $oldAccount = $transaction->account;
-                $oldAmount = $transaction->amount;
+                $oldAmount = $transaction->amount; // NIO
                 $oldType = $transaction->type;
 
-                $transaction->update($validated);
-                
                 if ($oldAccount->id !== $validated['account_id']) {
+                    $newAccount = Account::where('id', $validated['account_id'])
+                        ->where('user_id', $transaction->user_id)
+                        ->firstOrFail();
+
+                    if ($newAccount->type === 'savings') {
+                        return back()->with('error', '❌ No se pueden realizar transacciones en la cuenta de ahorros')->withInput();
+                    }
+                }
+
+                // Convertir el nuevo monto a NIO (desde la moneda del usuario)
+                $userCurrency = auth()->user()->currency ?? 'NIO';
+                $newAmountNIO = \App\Service\CurrencyService::convert((float) $validated['amount'], $userCurrency, 'NIO');
+
+                // Actualizar transacción con monto en NIO y demás campos
+                $transaction->type = $validated['type'];
+                $transaction->amount = $newAmountNIO;
+                $transaction->category_id = $validated['category_id'];
+                $transaction->account_id = $validated['account_id'];
+                $transaction->date = $validated['date'];
+                $transaction->description = $validated['description'] ?? null;
+                $transaction->save();
+
+                if ($oldAccount->id !== $validated['account_id']) {
+                    // Revertir en la cuenta anterior
                     $oldAccount->balance -= $oldType === 'income' ? $oldAmount : -$oldAmount;
                     $oldAccount->save();
-                    
+
+                    // Aplicar en la nueva cuenta
                     $newAccount = Account::where('id', $validated['account_id'])
                         ->where('user_id', $transaction->user_id)
                         ->lockForUpdate()
                         ->firstOrFail();
-                        
-                    $newAccount->balance += $validated['type'] === 'income' 
-                        ? $validated['amount'] 
-                        : -$validated['amount'];
+
+                    $newAccount->balance += $validated['type'] === 'income'
+                        ? $newAmountNIO
+                        : -$newAmountNIO;
                     $newAccount->save();
                 } else {
-                    $difference = ($validated['type'] === 'income' ? $validated['amount'] : -$validated['amount']) 
+                    $difference = ($validated['type'] === 'income' ? $newAmountNIO : -$newAmountNIO)
                                 - ($oldType === 'income' ? $oldAmount : -$oldAmount);
                     $oldAccount->balance += $difference;
                     $oldAccount->save();

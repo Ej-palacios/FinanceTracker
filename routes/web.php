@@ -15,6 +15,7 @@ use App\Http\Controllers\ExchangeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SavingsGoalsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,12 +72,18 @@ Route::get('/exchanges-debug', function () {
     // Reports
     Route::get('/reportes', [ReportsController::class, 'index'])->name('reportes.index');
 
+    // Savings Goals
+    Route::resource('savings-goals', SavingsGoalsController::class);
+    Route::post('savings-goals/{savingsGoal}/add-savings', [SavingsGoalsController::class, 'addSavings'])->name('savings-goals.addSavings');
+    Route::post('savings-goals/{savingsGoal}/toggle-status', [SavingsGoalsController::class, 'toggleStatus'])->name('savings-goals.toggleStatus');
 
     // Profile
     Route::prefix('perfil')->group(function () {
         Route::get('/', [ProfileController::class, 'profile'])->name('perfil');
         Route::put('/', [ProfileController::class, 'updateProfile'])->name('perfil.update');
         Route::put('/preferencias', [ProfileController::class, 'updatePreferences'])->name('perfil.preferences.update');
+        Route::post('/agregar-ahorros', [ProfileController::class, 'addSavings'])->name('perfil.addSavings');
+        Route::post('/liberar-ahorros', [ProfileController::class, 'releaseSavings'])->name('perfil.releaseSavings');
     });
 
     // Categories

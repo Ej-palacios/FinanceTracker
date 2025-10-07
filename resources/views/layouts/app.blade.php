@@ -7,9 +7,12 @@
     <title>FinanceTracker - @yield('title')</title>
 
     <!-- Bootstrap 5.3 CDN -->
-    <link rel="stylesheet" href="{{ asset('assets/css/loader.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ asset('assets/css/loader.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* La visibilidad del contenido se controla con body.loading en loader.css */
+    </style>
 
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="{{ asset('assets/css/variables.css') }}">
@@ -23,7 +26,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/light-theme.css') }}">
     @yield('styles')
 </head>
-<body>
+<body class="loading">
     <!-- Incluir el componente de transición -->
     @include('components.loader')
 

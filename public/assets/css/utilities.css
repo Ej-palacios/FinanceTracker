@@ -5,11 +5,12 @@
 
 .text-muted {
     opacity: 0.7;
+    color: var(--text-secondary);
 }
 
 /* Utilidades de espaciado */
 .p-6 {
-    padding: 4rem;
+    padding: 2rem;
 }
 
 .mt-6 {
@@ -17,7 +18,7 @@
 }
 
 .mb-6 {
-    margin-bottom: 4rem;
+    margin-bottom: 2rem;
 }
 
 /* Utilidades de tamaño */
@@ -37,15 +38,15 @@
 
 /* Utilidades para sombras */
 .shadow-sm {
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sm) !important;
 }
 
 .shadow {
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow) !important;
 }
 
 .shadow-lg {
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-lg) !important;
 }
 
 /* Utilidades para bordes */

@@ -5,7 +5,7 @@
             
             <div class="d-flex gap-2 flex-wrap">
                 <div class="dropdown">
-                    <button class="btn-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown">
+                    <button class="btn-secondary btn btn-outline-danger" type="button" id="filterDropdown" data-bs-toggle="dropdown">
                         <i class="bi bi-funnel"></i> Filtros
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
@@ -64,7 +64,7 @@
                     <i class="bi bi-x-circle"></i> Limpiar
                 </button>
                 
-                <a href="{{ route('transacciones.create') }}" class="submit-button">
+                <a href="{{ route('transacciones.create') }}" class="btn-secondary btn btn-outline-danger">
                     <span class="button-text"><i class="bi bi-plus-circle"></i> Nueva</span>
                     <span class="button-glow"></span>
                 </a>
@@ -158,7 +158,7 @@
                                     {{ $converted['formatted'] }}
                                 </td>
                                 <td class="text-center">
-                                    <div class="btn-group btn-group-sm">
+                                    <div class="btn-group btn-group-sm action-btns">
                                         <!-- Botón Show -->
                                         <a href="{{ route('transacciones.show', $transaction) }}" 
                                            class="btn btn-outline-info"

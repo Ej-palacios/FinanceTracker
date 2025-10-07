@@ -1,4 +1,4 @@
-<aside class="app-sidebar" style="background-color: var(--sidebar-bg); color: var(--sidebar-text);">
+<aside class="app-sidebar">
     <div class="sidebar-header p-3">
         <div class="sidebar-brand">
             <i class="bi bi-cash-coin"></i>
@@ -21,20 +21,37 @@
                 <span class="link-text">Transacciones</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('savings-goals.*') ? 'active' : '' }}" 
+               href="{{ route('savings-goals.index') }}">
+                <i class="bi bi-piggy-bank"></i>
+                <span class="link-text d-flex align-items-center gap-2">
+                    <span>Metas de Ahorro</span>
+                    @php
+                        $activeGoals = Auth::user()->activeSavingsGoals()->count();
+                    @endphp
+                    @if($activeGoals > 0)
+                        <span class="badge bg-success">{{ $activeGoals }}</span>
+                    @endif
+                </span>
+            </a>
+        </li>
         <!-- Nuevo item para Depósitos -->
         <li class="nav-item">
             <a class="nav-link {{ request()->routeIs('deposits.*') ? 'active' : '' }}"
                href="{{ route('deposits.index') }}">
                 <i class="bi bi-currency-exchange"></i>
-                <span class="link-text">Depósitos</span>
-                @php
-                    $pendingCount = \App\Models\ExchangeRequest::where('to_user_id', auth()->id())
-                        ->where('status', 'pending')
-                        ->count();
-                @endphp
-                @if($pendingCount > 0)
-                    <span class="badge bg-danger badge-notification">{{ $pendingCount }}</span>
-                @endif
+                <span class="link-text d-flex align-items-center gap-2">
+                    <span>Depósitos</span>
+                    @php
+                        $pendingCount = \App\Models\ExchangeRequest::where('to_user_id', auth()->id())
+                            ->where('status', 'pending')
+                            ->count();
+                    @endphp
+                    @if($pendingCount > 0)
+                        <span class="badge bg-danger">{{ $pendingCount }}</span>
+                    @endif
+                </span>
             </a>
         </li>
         <li class="nav-item">
@@ -52,13 +69,13 @@
 
         <!-- Enlaces públicos -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('servicios') }}" target="_blank">
+            <a class="nav-link" href="{{ route('servicios') }}">
                 <i class="bi bi-gear"></i>
                 <span class="link-text">Servicios</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('contacto') }}" target="_blank">
+            <a class="nav-link" href="{{ route('contacto') }}">
                 <i class="bi bi-envelope"></i>
                 <span class="link-text">Contacto</span>
             </a>

@@ -2,19 +2,26 @@
 
 @section('title', 'Perfil')
 
+@section('styles')
+<link rel="stylesheet" href="{{ asset('assets/css/profile.css') }}">
+@endsection
+
 @section('content')
-<div class="container-fluid">
-    <div class="row mb-4">
+<div class="container-fluid profile-page">
+    <div class="row align-items-end mb-4">
         <div class="col-12">
-            <h1>Configuración de Perfil</h1>
+            <h1 class="page-title">Configuración de Perfil</h1>
+            <p class="page-subtitle">Administra tu información personal, preferencias y ahorros</p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card" style="background-color: var(--bg-card); border: 1px solid var(--border-color);">
-                <div class="card-header" style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
-                    <h5 class="card-title" style="color: var(--text-primary); margin: 0;">Información Personal</h5>
+    <div class="row g-3 g-md-4">
+        <div class="col-12 col-lg-4 left-col">
+            <!-- Información Personal -->
+            <div class="card profile-card mb-3">
+                <div class="card-header">
+                    <div class="card-icon"><i class="bi bi-person"></i></div>
+                    <h5 class="card-title">Información Personal</h5>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('perfil.update') }}" method="POST">
@@ -45,20 +52,19 @@
                             @enderror
                         </div>
 
-                        
-                        <button type="submit" class="btn btn-primary" @if($user->name_updated_at && $user->name_updated_at->diffInDays(now()) < 30) disabled @endif>
+                        <button type="submit" class="btn btn-primary"
+                                @if($user->name_updated_at && $user->name_updated_at->diffInDays(now()) < 30) disabled @endif>
                             Guardar Cambios
                         </button>
-                          
                     </form>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-6">
-            <div class="card" style="background-color: var(--bg-card); border: 1px solid var(--border-color);">
-                <div class="card-header" style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
-                    <h5 class="card-title" style="color: var(--text-primary); margin: 0;">Preferencias</h5>
+            <!-- Preferencias -->
+            <div class="card profile-card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="bi bi-sliders"></i></div>
+                    <h5 class="card-title">Preferencias</h5>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('perfil.preferences.update') }}" method="POST">
@@ -100,7 +106,103 @@
                                    {{ $user->notifications ? 'checked' : '' }}>
                             <label class="form-check-label" for="notifications">Recibir Notificaciones</label>
                         </div>
-                     <button type="submit" class="btn btn-primary">Guardar Preferencias</button>
+                        <button type="submit" class="btn btn-primary">Guardar Preferencias</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-8">
+            <div class="row g-3 g-md-4">
+                <!-- Saldo Disponible -->
+                <div class="col-12 col-md-6">
+                    <div class="card profile-card metric-card success">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="bi bi-wallet2"></i></div>
+                            <h5 class="card-title">{{ $user->name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label metric-label">Saldo Disponible</label>
+                                <p class="metric-value">{{ $currencySymbol }}{{ number_format($mainBalanceConverted, 2) }}</p>
+                            </div>
+                            <button type="button" class="btn btn-success" id="btnOpenAgregarAhorros" data-bs-toggle="modal" data-bs-target="#modalAgregarAhorros">
+                                Agregar Ahorros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ahorros -->
+                <div class="col-12 col-md-6">
+                    <div class="card profile-card metric-card warning">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="bi bi-piggy-bank"></i></div>
+                            <h5 class="card-title">Ahorros</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label metric-label">Saldo Ahorrado</label>
+                                <p class="metric-value">{{ $currencySymbol }}{{ number_format($savingsBalanceConverted, 2) }}</p>
+                            </div>
+                            @if($savingsAccount->balance > 0)
+                                <button type="button" class="btn btn-warning" id="btnOpenLiberarAhorros" data-bs-toggle="modal" data-bs-target="#modalLiberarAhorros">
+                                    Liberar Ahorros
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Liberar Ahorros -->
+    <div class="modal fade" id="modalLiberarAhorros" tabindex="-1" aria-labelledby="modalLiberarAhorrosLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary);">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLiberarAhorrosLabel">Confirmar Liberar Ahorros</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('perfil.releaseSavings') }}" method="POST" id="formLiberarAhorros">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="release_amount" class="form-label">Monto a liberar</label>
+                            <input type="number" step="0.01" min="0.01" max="{{ $savingsBalanceConverted }}" class="form-control" id="release_amount" name="amount" required>
+                        </div>
+                        <p>¿Estás seguro que deseas liberar este monto de ahorros para que estén disponibles en tu cuenta principal?</p>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-warning" id="btnConfirmLiberar">Confirmar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Ahorros -->
+    <div class="modal fade" id="modalAgregarAhorros" tabindex="-1" aria-labelledby="modalAgregarAhorrosLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary);">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAgregarAhorrosLabel">Agregar Ahorros</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('perfil.addSavings') }}" method="POST" id="formAgregarAhorros">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="add_amount" class="form-label">Monto a ahorrar</label>
+                            <input type="number" step="0.01" min="0.01" max="{{ $mainBalanceConverted }}" class="form-control" id="add_amount" name="amount" required>
+                        </div>
+                        <p>¿Deseas agregar este monto a tus ahorros desde tu cuenta principal?</p>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-success" id="btnConfirmAgregar">Agregar</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -111,4 +213,67 @@
 
 @section('scripts')
 <script src="{{ asset('assets/js/modules/profile.js') }}"></script>
+<script>
+(function() {
+  const agregarModalEl = document.getElementById('modalAgregarAhorros');
+  const liberarModalEl = document.getElementById('modalLiberarAhorros');
+  let agregarModal = null;
+  let liberarModal = null;
+
+  const btnOpenAgregar = document.getElementById('btnOpenAgregarAhorros');
+  const btnOpenLiberar = document.getElementById('btnOpenLiberarAhorros');
+  const btnConfirmAgregar = document.getElementById('btnConfirmAgregar');
+  const btnConfirmLiberar = document.getElementById('btnConfirmLiberar');
+
+  const formAgregar = document.getElementById('formAgregarAhorros');
+  const formLiberar = document.getElementById('formLiberarAhorros');
+
+  function showPreWarning(message) {
+    if (window.showWarning) {
+      window.showWarning(message, 'Confirmación requerida', 4000);
+    }
+  }
+
+  function confirmAction(message) {
+    if (window.showConfirm) {
+      return window.showConfirm(message, '¿Confirmar acción?');
+    }
+    return Promise.resolve(window.confirm(message));
+  }
+
+  if (btnOpenAgregar) {
+    btnOpenAgregar.addEventListener('click', () => {
+      showPreWarning('Por favor confirma antes de agregar ahorros.');
+      if (!agregarModal && agregarModalEl && window.bootstrap) {
+        agregarModal = new bootstrap.Modal(agregarModalEl);
+      }
+      if (agregarModal) agregarModal.show();
+    });
+  }
+
+  if (btnOpenLiberar) {
+    btnOpenLiberar.addEventListener('click', () => {
+      showPreWarning('Por favor confirma antes de liberar ahorros.');
+      if (!liberarModal && liberarModalEl && window.bootstrap) {
+        liberarModal = new bootstrap.Modal(liberarModalEl);
+      }
+      if (liberarModal) liberarModal.show();
+    });
+  }
+
+  if (btnConfirmAgregar && formAgregar) {
+    btnConfirmAgregar.addEventListener('click', () => {
+      confirmAction('¿Deseas agregar este monto a tus ahorros desde tu cuenta principal?')
+        .then(accepted => { if (accepted) formAgregar.submit(); });
+    });
+  }
+
+  if (btnConfirmLiberar && formLiberar) {
+    btnConfirmLiberar.addEventListener('click', () => {
+      confirmAction('¿Estás seguro que deseas liberar este monto de ahorros para que estén disponibles en tu cuenta principal?')
+        .then(accepted => { if (accepted) formLiberar.submit(); });
+    });
+  }
+})();
+</script>
 @endsection

@@ -1,0 +1,104 @@
+/* Perfil - Estilos de página y tarjetas */
+
+.profile-page .page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.profile-page .page-subtitle {
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0;
+}
+
+/* Tarjetas base para perfil */
+.profile-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.profile-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: linear-gradient(
+    180deg,
+    var(--bg-secondary) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  border-bottom: 1px solid var(--border-color);
+  border-top-left-radius: var(--border-radius-lg);
+  border-top-right-radius: var(--border-radius-lg);
+}
+
+.profile-card .card-title {
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.profile-card .card-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(var(--primary-rgb), 0.12);
+  color: var(--primary-color);
+}
+
+/* Métricas de saldo */
+.metric-card .metric-label {
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.metric-card .metric-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.metric-card.success .metric-value { color: #198754; }
+.metric-card.warning .metric-value { color: #d97706; }
+
+/* Formularios */
+.profile-card .form-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.profile-card .form-control,
+.profile-card .form-select {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.profile-card .form-control:focus,
+.profile-card .form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.15);
+}
+
+/* Botones dentro de tarjetas */
+.profile-card .btn {
+  border-radius: var(--btn-border-radius);
+}
+
+/* Espaciado de grilla */
+@media (min-width: 992px) {
+  .profile-page .left-col > .profile-card + .profile-card {
+    margin-top: 1rem;
+  }
+}

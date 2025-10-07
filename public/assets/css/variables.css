@@ -1,10 +1,17 @@
+/* =============================================
+   FinanceTracker Design Tokens (Compact UI)
+   - Unified color system
+   - Fixed missing variables and inconsistencies
+   - Compact layout defaults (header/footer/sidebar)
+   - Light/Dark ready
+   ============================================= */
+
 :root {
   /* ======================
      COLOR SYSTEM
      ====================== */
-  
-  /* Primary Colors */
-  --primary-50: #faf5ff;
+  /* Primary Scale */
+  --primary-50:  #faf5ff;
   --primary-100: #f3e8ff;
   --primary-200: #e9d5ff;
   --primary-300: #d8b4fe;
@@ -15,76 +22,82 @@
   --primary-800: #6b21a8;
   --primary-900: #581c87;
 
-  /* Primary RGB for rgba() */
-  --primary-color-rgb: 139, 92, 246;
-  
-  /* Functional Colors */
+  /* Canonical aliases used across app */
+  --primary-color: var(--primary-600);
+  --primary-color-rgb: 147, 51, 234; /* rgb of --primary-600 */
+  --primary-rgb: var(--primary-color-rgb); /* Back-compat alias */
+
+  /* Functional (feedback) */
   --success-500: #10b981;
   --warning-500: #f59e0b;
-  --error-500: #ef4444;
-  --info-500: #3b82f6;
-  
-  /* Neutral Colors */
-  --white: #ffffff;
+  --error-500:   #ef4444;
+  --info-500:    #3b82f6;
+
+  /* Neutrals */
+  --white:   #ffffff;
   --gray-50: #f8fafc;
-  --gray-100: #f1f5f9;
-  --gray-200: #e2e8f0;
-  --gray-300: #cbd5e1;
-  --gray-400: #94a3b8;
-  --gray-500: #64748b;
-  --gray-600: #475569;
-  --gray-700: #334155;
-  --gray-800: #1e293b;
-  --gray-900: #0f172a;
-  --black: #000000;
-  
-  /* ======================
-     THEMING (LIGHT/DARK)
-     ====================== */
-  
-  /* Light Mode Defaults */
-  --bg-primary: var(--white);
-  --bg-secondary: var(--gray-50);
-  --bg-card: var(--white);
-  --text-primary: var(--gray-800);
-  --text-secondary: var(--gray-600);
-  --border-color: var(--gray-200);
-  --border-hover: var(--gray-300);
-  
-  /* Dark Mode Overrides */
-  [data-bs-theme="dark"] {
-    --bg-primary: var(--gray-900);
-    --bg-secondary: var(--gray-800);
-    --bg-card: var(--gray-800);
-    --text-primary: var(--white);
-    --text-secondary: var(--gray-300);
-    --border-color: var(--gray-700);
-    --border-hover: var(--gray-600);
-  }
-  
-  /* ======================
-     FLUENT UI 2 DESIGN SYSTEM
-     ====================== */
+  --gray-100:#f1f5f9;
+  --gray-200:#e2e8f0;
+  --gray-300:#cbd5e1;
+  --gray-400:#94a3b8;
+  --gray-500:#64748b;
+  --gray-600:#475569;
+  --gray-700:#334155;
+  --gray-800:#1e293b;
+  --gray-900:#0f172a;
+  --black:   #000000;
 
-  /* Border Radius */
-  --border-radius-none: 0;
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --border-radius-xl: 16px;
-  --border-radius-xxl: 20px;
+  /* ======================
+     THEME TOKENS (LIGHT)
+     ====================== */
+  --bg-primary:    var(--white);
+  --bg-secondary:  var(--gray-50);
+  --bg-card:       var(--white);
+  --text-primary:  var(--gray-800);
+  --text-secondary:var(--gray-600);
+  --border-color:  var(--gray-200);
+  --border-hover:  var(--gray-300);
 
-  /* Spacing (4px grid) */
+  /* ======================
+     LAYOUT
+     ====================== */
+  --header-height: 56px;  /* compact */
+  --footer-height: 48px;  /* was missing, used in layout.css */
+  --max-content-width: 1440px;
+  --container-padding: 1rem; /* compact */
+
+  /* Sidebar */
+  --sidebar-width: 240px; /* compact default; components.css may override */
+  --sidebar-bg: var(--bg-secondary);
+  --sidebar-text: var(--text-primary);
+  --sidebar-active-bg: var(--primary-100);
+  --sidebar-active-text: var(--primary-700);
+  --sidebar-hover-bg: rgba(0, 0, 0, 0.05);
+  --sidebar-separator: var(--border-color);
+
+  /* Cards */
+  --card-shadow: var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-md);
+  --card-border-radius: var(--border-radius-lg);
+
+  /* ======================
+     SPACING (4px Grid)
+     ====================== */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
-  --spacing-md: 12px;
+  --spacing-md: 12px; /* compact default */
   --spacing-lg: 16px;
   --spacing-xl: 20px;
   --spacing-xxl: 24px;
   --spacing-xxxl: 32px;
   --spacing-xxxxl: 48px;
 
-  /* Typography */
+  /* ======================
+     TYPOGRAPHY
+     ====================== */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
   --font-size-xs: 12px;
   --font-size-sm: 14px;
   --font-size-md: 16px;
@@ -98,74 +111,54 @@
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
 
-  /* Enhanced Shadows (Fluent UI 2) */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.12), 0 4px 6px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.12), 0 10px 10px rgba(0, 0, 0, 0.08);
-  --shadow-primary: 0 4px 12px rgba(59, 130, 246, 0.25), 0 2px 4px rgba(59, 130, 246, 0.15);
-
   /* ======================
-     COMPONENT SPECIFIC
+     RADII
      ====================== */
+  --border-radius-none: 0;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-xxl: 20px;
 
-  /* Header */
-  --header-bg: var(--bg-primary);
-
-  /* Sidebar */
-  --sidebar-width: 280px;
-  --sidebar-bg: var(--bg-secondary);
-  --sidebar-text: var(--text-primary);
-  --sidebar-active-bg: var(--primary-100);
-  --sidebar-active-text: var(--primary-700);
-  --sidebar-hover-bg: rgba(0, 0, 0, 0.05);
-  --sidebar-separator: var(--border-color);
-
-  /* Cards */
-  --card-shadow: var(--shadow-sm);
-  --card-shadow-hover: var(--shadow-md);
-  --card-border-radius: var(--border-radius-lg);
-  
   /* ======================
      EFFECTS
      ====================== */
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-primary: 0 4px 12px rgba(59, 130, 246, 0.25);
-  
+  /* Unified shadows (also add a generic --shadow for legacy usage) */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.10), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.14), 0 4px 6px rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.16), 0 10px 10px rgba(0, 0, 0, 0.12);
+  --shadow-primary: 0 4px 12px rgba(var(--primary-rgb), 0.25), 0 2px 4px rgba(var(--primary-rgb), 0.15);
+  --shadow: var(--shadow-md);
+
   /* Transitions */
   --transition-speed: 0.2s;
   --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
   --transition-all: all var(--transition-speed) var(--transition-easing);
-  
-  /* ======================
-     LAYOUT
-     ====================== */
-  
-  --header-height: 60px;
-  --max-content-width: 1440px;
-  --container-padding: 1.5rem;
-  
-  /* ======================
-     TYPOGRAPHY
-     ====================== */
-  
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  
-  /* Font Weights */
-  --font-light: 300;
-  --font-normal: 400;
-  --font-medium: 500;
-  --font-semibold: 600;
-  --font-bold: 700;
 }
 
-/* Component Styles */
+/* ======================
+   THEME TOKENS (DARK)
+   ====================== */
+[data-bs-theme="dark"] {
+  --bg-primary:    var(--gray-900);
+  --bg-secondary:  var(--gray-800);
+  --bg-card:       var(--gray-800);
+  --text-primary:  var(--white);
+  --text-secondary:var(--gray-300);
+  --border-color:  var(--gray-700);
+  --border-hover:  var(--gray-600);
+
+  /* Optional: subtle elevated shadows in dark */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.30), 0 1px 2px rgba(0, 0, 0, 0.20);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.40), 0 4px 6px rgba(0, 0, 0, 0.30);
+  --shadow: var(--shadow-md);
+}
+
+/* Component hook examples */
 .app-header {
-  background-color: var(--header-bg);
+  background-color: var(--bg-primary);
 }

@@ -15,7 +15,7 @@
 }
 
 .notification-item:hover {
-    background-color: var(--light-gray);
+    background-color: var(--bg-secondary);
     text-decoration: none;
 }
 
@@ -60,6 +60,7 @@
 .badge {
     font-size: 0.7rem;
     padding: 0.25rem 0.4rem;
+    border-radius: var(--border-radius-sm);
 }
 
 /* Animación para nuevas notificaciones */

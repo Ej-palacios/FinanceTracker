@@ -9,6 +9,16 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string|null $currency
+ * @property string|null $date_format
+ * @property bool $dark_mode
+ * @property bool $notifications
+ * @mixin \Eloquent
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -120,4 +130,39 @@ public function unreadNotifications()
 {
     return $this->notifications()->unread();
 }
+
+public function getMainAccount()
+{
+    return $this->accounts()->where('type', '!=', 'savings')->first();
+}
+
+    public function getSavingsAccount()
+    {
+        $savings = $this->accounts()->where('type', 'savings')->first();
+        if (!$savings) {
+            $savings = $this->accounts()->create([
+                'name' => 'Ahorros',
+                'type' => 'savings',
+                'balance' => 0,
+                'initial_balance' => 0,
+                'currency' => $this->currency ?? 'NIO'
+            ]);
+        }
+        return $savings;
+    }
+
+    public function savingsGoals()
+    {
+        return $this->hasMany(SavingsGoal::class);
+    }
+
+    public function activeSavingsGoals()
+    {
+        return $this->savingsGoals()->active();
+    }
+
+    public function completedSavingsGoals()
+    {
+        return $this->savingsGoals()->completed();
+    }
 }

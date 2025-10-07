@@ -16,7 +16,7 @@
                         <label for="account_type" class="form-label">Tipo *</label>
                         <select class="form-select" id="account_type" name="type" required>
                             <option value="cash">Efectivo</option>
-                            <option value="bank">Banco</option>
+                            
                             <option value="credit">Crédito</option>
                             <option value="savings">Ahorros</option>
                         </select>
