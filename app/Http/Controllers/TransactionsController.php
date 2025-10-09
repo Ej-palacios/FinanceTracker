@@ -26,6 +26,9 @@ class TransactionsController extends Controller
                     }
                 ])
                 ->where('user_id', $user->id)
+                ->whereDoesntHave('category', function($q) {
+                    $q->where('name', 'Depósitos');
+                })
                 ->latest();
 
             // Filtro por tipo (income/expense)
